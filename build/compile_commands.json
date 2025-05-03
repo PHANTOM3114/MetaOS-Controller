@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/root/server/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ -DCARES_STATICLIB -I/root/server/include -I/root/server/build -g -o CMakeFiles/protolib.dir/proto/system.pb.cc.o -c /root/server/build/proto/system.pb.cc",
+  "file": "/root/server/build/proto/system.pb.cc",
+  "output": "CMakeFiles/protolib.dir/proto/system.pb.cc.o"
+},
+{
+  "directory": "/root/server/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ -DCARES_STATICLIB -I/root/server/include -I/root/server/build -g -o CMakeFiles/protolib.dir/proto/system.grpc.pb.cc.o -c /root/server/build/proto/system.grpc.pb.cc",
+  "file": "/root/server/build/proto/system.grpc.pb.cc",
+  "output": "CMakeFiles/protolib.dir/proto/system.grpc.pb.cc.o"
+},
+{
+  "directory": "/root/server/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ -DCARES_STATICLIB -I/root/server/include -I/root/server/build -g -o CMakeFiles/server.dir/src/server.cc.o -c /root/server/src/server.cc",
+  "file": "/root/server/src/server.cc",
+  "output": "CMakeFiles/server.dir/src/server.cc.o"
+},
+{
+  "directory": "/root/server/build",
+  "command": "/usr/bin/aarch64-linux-gnu-g++ -DCARES_STATICLIB -I/root/server/include -I/root/server/build -g -o CMakeFiles/server.dir/src/system.cc.o -c /root/server/src/system.cc",
+  "file": "/root/server/src/system.cc",
+  "output": "CMakeFiles/server.dir/src/system.cc.o"
+}
+]

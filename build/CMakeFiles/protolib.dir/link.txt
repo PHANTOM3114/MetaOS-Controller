@@ -1,0 +1,2 @@
+/usr/bin/aarch64-linux-gnu-ar qc libprotolib.a CMakeFiles/protolib.dir/proto/system.pb.cc.o CMakeFiles/protolib.dir/proto/system.grpc.pb.cc.o
+/usr/bin/aarch64-linux-gnu-ranlib libprotolib.a

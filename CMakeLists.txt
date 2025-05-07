@@ -6,6 +6,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Protobuf REQUIRED CONFIG)  
 find_package(gRPC CONFIG REQUIRED)
 
+enable_testing()
+add_subdirectory(tests)
+include_directories(${CMAKE_SOURCE_DIR}/test)
+
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_library(protolib proto/system.proto)

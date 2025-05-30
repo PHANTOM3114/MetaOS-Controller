@@ -9,6 +9,10 @@ FetchContent_Declare(
 #set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(test_system system_test.cc)
+add_executable(test_system system_test.cc
+               ../src/system.cc)
 
-target_link_libraries(test_system gtest gtest_main)
+target_link_libraries(test_system gtest gtest_main protolib)
+
+include(GoogleTest)
+gtest_discover_tests(test_system)

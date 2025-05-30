@@ -6,8 +6,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Protobuf REQUIRED CONFIG)  
 find_package(gRPC CONFIG REQUIRED)
 
-enable_testing()
-add_subdirectory(tests)
 include_directories(${CMAKE_SOURCE_DIR}/test)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -22,6 +20,15 @@ protobuf_generate(TARGET protolib LANGUAGE grpc
 GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
 PLUGIN "protoc-gen-grpc=${grpc_cpp_plugin_location}")
 
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    option(system_test "build tests (or no)" ON)
+    
+    if(system_test)
+        enable_testing()
+        add_subdirectory(tests)
+    endif()
+endif()
+
 add_executable(server src/server.cc
                       src/system.cc)
-target_link_libraries(server protolib)
+target_link_libraries(server PUBLIC protolib)

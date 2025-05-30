@@ -15,13 +15,13 @@
     std::string method = "RunShellScriptRequest ";
     
     #if defined(_WIN32) || defined(_WIN64)
-        result = std::system("echo RunShellScriptRequest (Windows)");
+        result = std::system("echo RunShellScriptRequest");
         os_name = "Windows";
     #elif defined(__APPLE__)
-        result = std::system("echo RunShellScriptRequest (macOS)");
+        result = std::system("echo RunShellScriptRequest");
         os_name = "MacOS";
     #elif defined(__linux__)
-        result = std::system("echo RunShellScriptRequest (Linux)");
+        result = std::system("echo RunShellScriptRequest");
         os_name = "Linux";
     #else
         result = false;

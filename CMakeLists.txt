@@ -12,6 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_library(protolib proto/system.proto)
 target_link_libraries(protolib gRPC::grpc++)
+target_link_libraries(protolib gRPC::grpc++_reflection)
 target_include_directories(protolib PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
 

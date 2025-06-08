@@ -1,7 +1,12 @@
 #include "system.hh"
 
+#include <grpcpp/ext/proto_server_reflection_plugin.h>
+
 int main()
 {
+    // Initialize gRPC reflection plugin
+    grpc::reflection::InitProtoReflectionServerBuilderPlugin();
+
     ProcessingImplemantation service;
     grpc::ServerBuilder builder;
 

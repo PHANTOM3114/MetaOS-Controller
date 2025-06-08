@@ -11,24 +11,20 @@
 ::grpc::Status ProcessingImplemantation::RunShellScriptRequest(::grpc::ServerContext* context, const ::MetaOS::RunShellScript& request, ::MetaOS::Response* response)
 {
     bool result;
-    std::string os_name;
-    std::string method = "RunShellScriptRequest ";
+    std::string method = "RunShellScriptRequest";
     
     #if defined(_WIN32) || defined(_WIN64)
         result = std::system("echo RunShellScriptRequest");
-        os_name = "Windows";
     #elif defined(__APPLE__)
         result = std::system("echo RunShellScriptRequest");
-        os_name = "MacOS";
     #elif defined(__linux__)
         result = std::system("echo RunShellScriptRequest");
-        os_name = "Linux";
     #else
         result = false;
         std::cerr << "Unsupported OS";
     #endif
     
-    response->set_output(method.append(os_name));
+    response->set_output(method);
     response->set_success(result == 0);
     
     return ::grpc::Status::OK;

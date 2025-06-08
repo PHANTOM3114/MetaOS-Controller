@@ -34,7 +34,7 @@ TEST_F(ProcessingTest, RunShellScriptRequestTest) {
     #if defined(_WIN32) || defined(_WIN64)
         EXPECT_EQ(response.output(), "RunShellScriptRequest Windows");
     #elif defined(__APPLE__) || defined(__MACH__)
-        EXPECT_EQ(response.output(), "RunShellScriptRequest MacOS");
+        EXPECT_EQ(response.output(), "RunShellScriptRequest");
     #elif defined(__linux__)
         EXPECT_EQ(response.output(), "RunShellScriptRequest Linux");
     #endif

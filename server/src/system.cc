@@ -18,7 +18,6 @@
     #if defined(_WIN32) || defined(_WIN64)
         result = std::system("echo RunShellScriptRequest");
     #elif defined(__APPLE__)
-
         result = std::system("echo RunShellScriptRequest");
     #elif defined(__linux__)
         result = std::system("echo RunShellScriptRequest");

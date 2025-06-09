@@ -10,7 +10,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_executable(test_system system_test.cc
-               ../src/system.cc)
+        ../src/system.cc)
 
 target_link_libraries(test_system gtest gtest_main protolib)
 

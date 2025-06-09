@@ -23,7 +23,6 @@ PLUGIN "protoc-gen-grpc=${grpc_cpp_plugin_location}")
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     option(system_test "build tests (or no)" ON)
-    
     if(system_test)
         enable_testing()
         add_subdirectory(tests)

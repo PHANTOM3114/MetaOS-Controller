@@ -11,12 +11,10 @@ int main()
     grpc::ServerBuilder builder;
 
     // Set the server address and port
-
     builder.AddListeningPort("0.0.0.0:50051", grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
 
     // Start the server
-
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
 
     if (!server) {

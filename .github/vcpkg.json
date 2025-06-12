@@ -1,10 +1,11 @@
 {
   "name": "metaos-controller",
-  "version": "0.1.0",
+  "version-string": "0.1.0",
   "dependencies": [
     "grpc",
-    "protobuf"
+    "protobuf",
     "gtest"
+
   ],
-  "builtin-baseline": "2024-05-30"
+  "builtin-baseline": "2eefe77e8974690d41f021bb25a1a3f3ab5c9b34"
 }

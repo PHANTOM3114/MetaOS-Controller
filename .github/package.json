@@ -1,9 +1,10 @@
 {
-  "name": "remote-controller",
-  "version-string": "0.1.0",
+  "name": "metaos-controller",
+  "version": "0.1.0",
   "dependencies": [
     "grpc",
+    "protobuf"
     "gtest"
   ],
-  "builtin-baseline": "e8b25b658a20675844a43477156976937589e494"
+  "builtin-baseline": "4f6e0b89d50d7d4f35ff3ae6c2196f761a820a82"
 }

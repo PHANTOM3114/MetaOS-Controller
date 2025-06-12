@@ -17,7 +17,9 @@ jobs:
       # This is the corrected step for installing dependencies
       - name: Install dependencies with vcpkg
         uses: lukka/run-vcpkg@v11
-
+        with:
+          vcpkgGitCommitId: 'e8b25b658a20675844a43477156976937589e494'
+          
       - name: Configure CMake
         run: |
           # The run-vcpkg action automatically sets the CMAKE_TOOLCHAIN_FILE env variable

@@ -4,5 +4,6 @@
   "dependencies": [
     "grpc",
     "gtest"
-  ]
+  ],
+  "builtin-baseline": "e8b25b658a20675844a43477156976937589e494"
 }

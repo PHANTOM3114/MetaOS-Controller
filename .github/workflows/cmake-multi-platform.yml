@@ -18,8 +18,7 @@ jobs:
       - name: Install dependencies with vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          # This tells the action where your vcpkg.json is located
-          vcpkgJsonGlob: '${{ github.workspace }/vcpkg.json}'
+          vcpkgJsonGlob: '.github/vcpkg.json'
 
       - name: Configure CMake
         run: |

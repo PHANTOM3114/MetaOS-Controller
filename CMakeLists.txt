@@ -1,50 +1,49 @@
 cmake_minimum_required(VERSION 3.20)
-project(remote_contoller)
+project(remote_controller CXX)
 
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Protobuf REQUIRED CONFIG)
-find_package(gRPC CONFIG REQUIRED)
+find_package(gRPC REQUIRED)
 
-set(PROTO_SRC_DIR "${CMAKE_SOURCE_DIR}/proto")
-set(PROTO_GEN_DIR "${CMAKE_SOURCE_DIR}/proto")
+set(PROTO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/proto/system.proto)
+set(GENERATED_DIR ${CMAKE_BINARY_DIR}/generated_proto_files)
 
-include_directories(${CMAKE_SOURCE_DIR}/server/test)
-include_directories(${CMAKE_SOURCE_DIR}/server/include)
+get_filename_component(PROTO_FILENAME ${PROTO_FILES} NAME_WE)
+set(GENERATED_PB_H ${GENERATED_DIR}/${PROTO_FILENAME}.pb.h)
+set(GENERATED_PB_CC ${GENERATED_DIR}/${PROTO_FILENAME}.pb.cc)
+set(GENERATED_GRPC_H ${GENERATED_DIR}/${PROTO_FILENAME}.grpc.pb.h)
+set(GENERATED_GRPC_CC ${GENERATED_DIR}/${PROTO_FILENAME}.grpc.pb.cc)
 
-include_directories(${CMAKE_SOURCE_DIR}/client/include)
-
-add_library(protolib proto/system.proto)
-target_link_libraries(protolib gRPC::grpc++)
-target_link_libraries(protolib gRPC::grpc++_reflection)
-target_include_directories(protolib PUBLIC ${CMAKE_SOURCE_DIR}/proto)
-get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
-
-protobuf_generate(
-        TARGET protolib
-        LANGUAGE cpp
-        PROTOC_OUT_DIR ${PROTO_GEN_DIR}
+add_custom_command(
+        OUTPUT
+        ${GENERATED_PB_H} ${GENERATED_PB_CC}
+        ${GENERATED_GRPC_H} ${GENERATED_GRPC_CC}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${GENERATED_DIR}
+        COMMAND protobuf::protoc
+        --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto
+        --cpp_out=${GENERATED_DIR}
+        --grpc_out=${GENERATED_DIR}
+        --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
+        ${PROTO_FILES}
+        DEPENDS ${PROTO_FILES}
 )
 
-protobuf_generate(
-        TARGET protolib
-        LANGUAGE grpc
-        GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
-        PROTOC_OUT_DIR ${PROTO_GEN_DIR}
-        PLUGIN "protoc-gen-grpc=${grpc_cpp_plugin_location}"
+add_library(generated_protos
+        ${GENERATED_PB_CC}
+        ${GENERATED_GRPC_CC}
 )
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    option(system_test "build tests (or no)" ON)
+target_include_directories(generated_protos PUBLIC
+        ${GENERATED_DIR}
+)
 
-    if(system_test)
-        enable_testing()
-        add_subdirectory(server/test)
-    endif()
-endif()
+target_link_libraries(generated_protos PUBLIC
+        protobuf::libprotobuf
+        gRPC::grpc++
+)
+
+enable_testing()
 
 add_subdirectory(server)
 add_subdirectory(client)
-
-target_link_libraries(server PUBLIC protolib)
-target_link_libraries(client PUBLIC protolib)

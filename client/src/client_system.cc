@@ -4,22 +4,19 @@
 #include "client_system.hh"
 
 MetaClient::MetaClient(std::shared_ptr<grpc::Channel> channel)
-    : stub_(MetaOS::MetaControl::NewStub(channel)) {}
+    : stub_(MetaOS::ShellControllerService::NewStub(channel)) {}
 
-MetaOS::Response MetaClient::RunShellScript(const std::string& command) {
-    MetaOS::RunShellScript request;
-    request.set_command(command);
-
-    MetaOS::Response response;
+void MetaClient::ExecuteShellRequest(const std::string& command, MetaOS::ExecuteShellResponse* response) {
+    MetaOS::ExecuteShellRequest request;
     grpc::ClientContext context;
 
-    grpc::Status status = stub_->RunShellScriptRequest(&context, request, &response);
+    request.set_command(command);
+
+    grpc::Status status = stub_->ExecuteShell(&context, request, response);
 
     if (!status.ok()) {
         std::cerr << "RPC failed: " << status.error_message() << std::endl;
-        response.set_output("RPC failed");
-        response.set_success(false);
+        response->set_output("RPC failed: " + status.error_message());
+        response->set_success(false);
     }
-
-    return response;
 }

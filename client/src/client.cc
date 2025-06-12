@@ -12,14 +12,16 @@ int main() {
         if (choice == 0) break;
 
         if (choice == 1) {
-            std::string cmd;
+            std::string shell_prompt;
             std::cout << "Enter shell command: ";
             std::cin.ignore();
-            std::getline(std::cin, cmd);
+            std::getline(std::cin, shell_prompt);
 
-            MetaOS::Response res = client.RunShellScript(cmd);
-            std::cout << "Output: " << res.output() << "\nSuccess: " << std::boolalpha << res.success() << "\n";
-        } else {
+            MetaOS::ExecuteShellResponse shell_response;
+            client.ExecuteShellRequest(shell_prompt, &shell_response);
+            std::cout << "Output: " << shell_response.output() << "\n";
+        }
+        else {
             std::cout << "Invalid option.\n";
         }
     }

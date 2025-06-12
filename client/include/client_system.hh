@@ -5,14 +5,13 @@
 #pragma once
 
 #include <grpcpp/grpcpp.h>
-#include "proto/system.grpc.pb.h"
+#include "system.grpc.pb.h"
 
 class MetaClient {
 public:
     explicit MetaClient(std::shared_ptr<grpc::Channel> channel);
 
-    MetaOS::Response RunShellScript(const std::string& command);
-
+    void ExecuteShellRequest(const std::string& command, MetaOS::ExecuteShellResponse* response);
 private:
-    std::unique_ptr<MetaOS::MetaControl::Stub> stub_;
+    std::unique_ptr<MetaOS::ShellControllerService::Stub> stub_;
 };

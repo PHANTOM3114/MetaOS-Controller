@@ -1,14 +1,29 @@
-#include "system.hh"
+//Standard includes
+#include <iostream>
+#include <memory>
+#include <string>
 
+//gRPC includes
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
+#include <grpcpp/grpcpp.h>
+#include <system.grpc.pb.h>
 
-int main()
-{
+#include <system.hh>
+
+using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::Status;
+using MetaOS::ExecuteShellRequest;
+using MetaOS::ExecuteShellResponse;
+
+
+int main(int argc, char** argv) {
     // Initialize gRPC reflection plugin
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 
     ProcessingImplemantation service;
-    grpc::ServerBuilder builder;
+    ServerBuilder builder;
 
     // Set the server address and port
     builder.AddListeningPort("0.0.0.0:50051", grpc::InsecureServerCredentials());

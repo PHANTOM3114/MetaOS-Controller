@@ -1,12 +1,28 @@
-cmake_minimum_required(VERSION 3.20)
-project(server)
+add_library(server_logic
+        src/system.cc
+)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+target_include_directories(server_logic PUBLIC
+        include
+)
+
+target_link_libraries(server_logic PUBLIC
+        generated_protos
+        gRPC::grpc++
+        protobuf::libprotobuf
+)
 
 add_executable(server
-        src/system.cc
         src/server.cc
 )
 
-target_include_directories(server PRIVATE ../../proto)
-target_link_libraries(server PRIVATE protolib)
+target_link_libraries(server PRIVATE
+        server_logic
+        gRPC::grpc++_reflection
+)
+
+option(BUILD_SERVER_TESTS "Build the tests for the server" ON)
+
+if(BUILD_SERVER_TESTS)
+    add_subdirectory(test)
+endif()

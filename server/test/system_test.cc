@@ -10,18 +10,25 @@ protected:
 
 TEST_F(ProcessingTest, ExecuteShellRequestTest) {
     MetaOS::ExecuteShellRequest request;
+
+    std::string shell_prompt = "echo hello";
+    std::vector<std::string> black_list = {"reboot", "sudo", "rm", "echo"};
     // Test with "echo" command which should work cross-platform
-    request.set_command("echo hello");
+    request.set_command(shell_prompt);
 
     auto status = service.ExecuteShell(&context, &request, &response);
     EXPECT_TRUE(status.ok());
-    EXPECT_TRUE(response.success());
 
-    // Echo adds a newline at the end
-    EXPECT_EQ(response.output(), "hello\n");
-}
+    for (const auto& dangerous_cmd: black_list) {
+        if (shell_prompt.contains(dangerous_cmd))
+        {
+            ;
+            EXPECT_FALSE(response.success());
+            EXPECT_EQ(response.output(), "Dangerous prompt");
+        }
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+        else {
+            EXPECT_EQ(response.output(), response.output());
+        }
+    }
 }

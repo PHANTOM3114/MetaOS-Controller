@@ -41,8 +41,8 @@ The controller is designed to manage the following system components via its gRP
 
 ## 🗺️ Roadmap
 
+* [+] Make a stream-output of shell responce
 * [ ] Add a security layer above the shell responce and request
-* [ ] Make a stream-output of shell responce
 * [ ] Set up a fully working CI/CD pipeline with automated tests.
 
 ---

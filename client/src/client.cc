@@ -13,13 +13,18 @@ int main() {
 
         if (choice == 1) {
             std::string shell_prompt;
-            std::cout << "Enter shell command: ";
+            std::cout << "Enter shell prompt: ";
             std::cin.ignore();
             std::getline(std::cin, shell_prompt);
 
+            while (shell_prompt.empty()) {
+                std::cout << "You dont enter anything, please try again!" << std::endl;
+                std::cout << "Enter shell prompt: ";
+                std::getline(std::cin, shell_prompt);
+            }
+
             MetaOS::ExecuteShellResponse shell_response;
-            client.ExecuteShellRequest(shell_prompt, &shell_response);
-            std::cout << "Output: " << shell_response.output() << "\n";
+            client.ExecuteShellRequest(shell_prompt);
         }
         else {
             std::cout << "Invalid option.\n";

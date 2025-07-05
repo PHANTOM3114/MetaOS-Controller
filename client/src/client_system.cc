@@ -6,17 +6,18 @@
 MetaClient::MetaClient(std::shared_ptr<grpc::Channel> channel)
     : stub_(MetaOS::ShellControllerService::NewStub(channel)) {}
 
-void MetaClient::ExecuteShellRequest(const std::string& command, MetaOS::ExecuteShellResponse* response) {
-    MetaOS::ExecuteShellRequest request;
+void MetaClient::ExecuteShellRequest(const std::string& command) {
     grpc::ClientContext context;
+    MetaOS::ExecuteShellRequest request;
+    MetaOS::ExecuteShellResponse response;
 
     request.set_command(command);
 
-    grpc::Status status = stub_->ExecuteShell(&context, request, response);
+    std::unique_ptr<grpc::ClientReader<::MetaOS::ExecuteShellResponse>> reader(stub_->ExecuteShell(&context, request));
 
-    if (!status.ok()) {
-        std::cerr << "RPC failed: " << status.error_message() << std::endl;
-        response->set_output("RPC failed: " + status.error_message());
-        response->set_success(false);
+    while (reader->Read(&response)) {
+        std::cout << response.output() << std::endl;
     }
+
+    grpc::Status status = reader->Finish();
 }

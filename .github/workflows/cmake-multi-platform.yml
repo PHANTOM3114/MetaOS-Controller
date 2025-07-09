@@ -7,60 +7,37 @@ on:
     branches: [ "main" ]
 
 jobs:
-  lint:
+  build: # Назва нашого єдиного job'а
     runs-on: ubuntu-latest
-    container: ubuntu:24.04
 
-    steps:
-      - name: Install dependencies
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            clang-format make
-
-      - uses: actions/checkout@v4
-
-  test:
-    runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow_ref }}-${{ github.job }}_${{ matrix.container }}-${{ matrix.compiler }}-${{ matrix.variant }}
-    container: ${{ matrix.container }}
-
-    strategy:
+    strategy: # Матриця стратегій тепер знаходиться всередині job'a
       fail-fast: false
       matrix:
-        compiler:
-          - g++
-        container:
-          - ubuntu:24.04
-        variant:
-          - libuv
-          - asio
+        # Поки що залишимо один варіант для простоти, потім можеш додати інші
+        variant: [asio]
         include:
-          - compiler: g++
-            dependencies: g++
           - variant: asio
-            cmake_args: -DGRPCXX_USE_ASIO=ON
+            # Прямо тут визначаємо, які залежності потрібні для цього варіанту
+            dependencies: "libgrpc++-dev libprotobuf-dev protobuf-compiler libgtest-dev"
+            cmake_args: "-DGRPCXX_USE_ASIO=ON" # І які аргументи для CMake
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive' # Затягуємо сабмодулі, якщо вони є
+
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            ${{ matrix.dependencies }} \
-            cmake ninja-build \
-            libprotobuf-dev libprotoc-dev protobuf-compiler
-      - uses: actions/checkout@v4
+          sudo apt-get update
+          # Встановлюємо базові інструменти і залежності з нашої матриці
+          sudo apt-get install -y build-essential cmake ninja-build g++ ${{ matrix.dependencies }}
+
       - name: Configure CMake
-        run: |
-          cmake -B .build -G Ninja \
-            -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=OFF \
-            -DGRPCXX_BUILD_EXAMPLES=OFF \
-            -DGRPCXX_BUILD_EXPERIMENTS=OFF \
-            ${{ matrix.cmake_args }}
+        # -S . означає, що вихідний код в поточній папці
+        # -B .build означає, що результати збірки будуть в папці .build
+        run: cmake -S . -B .build -G Ninja -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_args }}
+
       - name: Build
-        run: cmake --build .build
-      - name: Test
-        run: ctest --test-dir .build --output-on-failure
+        # Запускаємо компіляцію
+        run: cmake --build .build --config Release

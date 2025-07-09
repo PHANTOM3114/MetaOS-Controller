@@ -10,13 +10,14 @@ protected:
 
 TEST_F(ProcessingTest, ExecuteShellRequestTest) {
     MetaOS::ExecuteShellRequest request;
+    ::grpc::ServerWriter< ::MetaOS::ExecuteShellResponse>* writer;
 
     std::string shell_prompt = "echo hello";
     std::vector<std::string> black_list = {"reboot", "sudo", "rm", "echo"};
     // Test with "echo" command which should work cross-platform
     request.set_command(shell_prompt);
 
-    auto status = service.ExecuteShell(&context, &request, &response);
+    auto status = service.ExecuteShell(&context, &request, writer);
     EXPECT_TRUE(status.ok());
 
     for (const auto& dangerous_cmd: black_list) {

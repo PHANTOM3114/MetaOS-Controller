@@ -6,7 +6,8 @@ on:
   pull_request:
     branches: [ "main" ]
 
-test:
+jobs:
+  test:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow_ref }}-${{ github.job }}_${{ matrix.container }}-${{ matrix.compiler }}-${{ matrix.variant }}
@@ -28,7 +29,6 @@ test:
           - variant: asio
             cmake_args: -DGRPCXX_USE_ASIO=ON
 
-jobs:
   build:
     runs-on: ubuntu-latest
 

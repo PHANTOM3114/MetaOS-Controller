@@ -20,6 +20,14 @@ jobs:
         with:
           vcpkgJsonGlob: '.github/vcpkg.json'
 
+      - name: Build gRPC C++ example
+        run: |
+            cd example
+            mkdir -p build
+            cd build
+            cmake -DCMAKE_PREFIX_PATH="$GRPC_ROOT" ..
+            make
+
       - name: Configure CMake
         run: |
           # The run-vcpkg action automatically sets the CMAKE_TOOLCHAIN_FILE env variable

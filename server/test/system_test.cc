@@ -22,7 +22,6 @@ TEST_F(ProcessingTest, ExecuteShellRequestTest) {
     for (const auto& dangerous_cmd: black_list) {
         if (shell_prompt.contains(dangerous_cmd))
         {
-            ;
             EXPECT_FALSE(response.success());
             EXPECT_EQ(response.output(), "Dangerous prompt");
         }

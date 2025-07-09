@@ -29,6 +29,5 @@
         response.set_success(true);
         writer->Write(response);
     }
-
     return ::grpc::Status::OK;
 }

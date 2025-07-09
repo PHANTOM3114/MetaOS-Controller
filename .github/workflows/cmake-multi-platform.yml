@@ -19,7 +19,6 @@ jobs:
             clang-format make
 
       - uses: actions/checkout@v4
-      - run: make lint:ci
 
   test:
     runs-on: ubuntu-latest

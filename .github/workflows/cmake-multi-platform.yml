@@ -39,8 +39,8 @@ jobs:
       # This is the corrected step for installing dependencies
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
             ${{ matrix.dependencies }} \
             cmake ninja-build \
             libprotobuf-dev libprotoc-dev protobuf-compiler

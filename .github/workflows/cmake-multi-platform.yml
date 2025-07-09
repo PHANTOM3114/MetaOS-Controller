@@ -6,6 +6,28 @@ on:
   pull_request:
     branches: [ "main" ]
 
+  test:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow_ref }}-${{ github.job }}_${{ matrix.container }}-${{ matrix.compiler }}-${{ matrix.variant }}
+    container: ${{ matrix.container }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - g++
+        container:
+          - ubuntu:24.04
+        variant:
+          - libuv
+          - asio
+        include:
+          - compiler: g++
+            dependencies: g++
+          - variant: asio
+            cmake_args: -DGRPCXX_USE_ASIO=ON
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
-  test:
+test:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow_ref }}-${{ github.job }}_${{ matrix.container }}-${{ matrix.compiler }}-${{ matrix.variant }}

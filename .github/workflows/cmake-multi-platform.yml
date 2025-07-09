@@ -7,6 +7,20 @@ on:
     branches: [ "main" ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: ubuntu:24.04
+
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            clang-format make
+
+      - uses: actions/checkout@v4
+      - run: make lint:ci
+
   test:
     runs-on: ubuntu-latest
     concurrency:
@@ -29,18 +43,11 @@ jobs:
           - variant: asio
             cmake_args: -DGRPCXX_USE_ASIO=ON
 
-  build:
-    runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # This is the corrected step for installing dependencies
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          apt-get update
+          apt-get install -y --no-install-recommends \
             ${{ matrix.dependencies }} \
             cmake ninja-build \
             libprotobuf-dev libprotoc-dev protobuf-compiler
@@ -56,3 +63,5 @@ jobs:
             ${{ matrix.cmake_args }}
       - name: Build
         run: cmake --build .build
+      - name: Test
+        run: ctest --test-dir .build --output-on-failure

@@ -35,3 +35,6 @@ jobs:
 
       - name: Build
         run: cmake --build .build --config Release
+
+      - name: Test
+        run: echo "Placeholder for future gtest tests"

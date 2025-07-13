@@ -13,7 +13,11 @@
     {
         if (shell_prompt.contains(dangerous_cmd))
         {
-            return ::grpc::Status::CANCELLED;
+            MetaOS::ExecuteShellResponse response;
+            response.set_output("Dangerous command");
+            response.set_success(false);
+            writer->Write(response);
+            return ::grpc::Status::OK;
         }
     }
 

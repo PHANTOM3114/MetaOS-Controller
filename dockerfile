@@ -2,6 +2,7 @@ FROM ubuntu:latest
 
 RUN apt-get update && apt-get install -y \
     cmake \
+    g++ \
     build-essential \
     git \
     libgrpc++-dev \

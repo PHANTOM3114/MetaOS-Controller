@@ -3,7 +3,7 @@ syntax = "proto3";
 package MetaOS;
 
 service ShellControllerService {
-    rpc ExecuteShell (ExecuteShellRequest) returns (stream ExecuteShellResponse) {}
+    rpc ExecuteShell (stream ExecuteShellRequest) returns (stream ExecuteShellResponse) {}
 }
 
 message ExecuteShellRequest {

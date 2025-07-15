@@ -6,18 +6,40 @@
 MetaClient::MetaClient(std::shared_ptr<grpc::Channel> channel)
     : stub_(MetaOS::ShellControllerService::NewStub(channel)) {}
 
-void MetaClient::ExecuteShellRequest(const std::string& command) {
+void MetaClient::ExecuteShellRequest() {
     grpc::ClientContext context;
-    MetaOS::ExecuteShellRequest request;
+
+    std::shared_ptr<grpc::ClientReaderWriter<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse>> stream(stub_->ExecuteShell(&context));
+
+    std::thread writer([stream]() {
+        std::string line;
+        while (std::getline(std::cin, line)) {
+            if (line == "exit") {
+                break;
+            }
+
+            MetaOS::ExecuteShellRequest request;
+            request.set_command(line);
+
+            if (!stream->Write(request)) {
+                break;
+            }
+        }
+
+        stream->WritesDone();
+    });
+
     MetaOS::ExecuteShellResponse response;
-
-    request.set_command(command);
-
-    std::unique_ptr<grpc::ClientReader<::MetaOS::ExecuteShellResponse>> reader(stub_->ExecuteShell(&context, request));
-
-    while (reader->Read(&response)) {
-        std::cout << response.output() << std::endl;
+    while (stream->Read(&response)) {
+        std::cout << response.output();
     }
 
-    grpc::Status status = reader->Finish();
+    writer.join();
+
+    grpc::Status status = stream->Finish();
+    if (!status.ok()) {
+        std::cerr << "RPC failed: " << status.error_message() << std::endl;
+    } else {
+        std::cout << "\n--- RPC finished successfully ---\n";
+    }
 }

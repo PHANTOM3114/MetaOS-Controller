@@ -7,13 +7,15 @@
 #include <grpcpp/grpcpp.h>
 #include "system.grpc.pb.h"
 
+#include <thread>
+#include <mutex>
 #include <iostream>
 
 class MetaClient {
 public:
     explicit MetaClient(std::shared_ptr<grpc::Channel> channel);
 
-    void ExecuteShellRequest(const std::string& command);
+    void ExecuteShellRequest();
 private:
     std::unique_ptr<MetaOS::ShellControllerService::Stub> stub_;
 };

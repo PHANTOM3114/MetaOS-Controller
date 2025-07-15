@@ -1,17 +1,18 @@
-FROM alpine:latest
-# Install gRPC and its dependencies
-WORKDIR /gRPC
-COPY . .
+FROM ubuntu:latest
 
-RUN apk update && apk add --no-cache \
-    autoconf \
-    automake \
-    build-base \
+RUN apt-get update && apt-get install -y \
     cmake \
-    curl \
-    g++ \
+    build-essential \
     git \
-    libtool \
-    make \
-    pkgconf \
-    unzip
+    libgrpc++-dev \
+    libgrpc-dev \
+    protobuf-compiler-grpc \
+    libprotobuf-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /MetaOS
+
+WORKDIR /MetaOS
+
+RUN mkdir -p build

@@ -6,13 +6,49 @@
 
 #include <mutex>
 #include <thread>
-// ProcessingImplemantation class, which will handle command and delegate their to machine, on which the server is running
+#include <string>
+#include <array>
 
-class ProcessingImplemantation : public MetaOS::ShellControllerService::Service
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/epoll.h>
+
+class ShellReactor : public grpc::ServerBidiReactor<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse> {
+public:
+    explicit ShellReactor() {
+        StartRead(&request_);
+    }
+    void OnReadDone(bool ok) override;
+    void OnWriteDone(bool ok) override;
+    void OnDone() override;
+
+private:
+    MetaOS::ExecuteShellRequest request_;
+    MetaOS::ExecuteShellResponse response_;
+
+    void DoNextWrite() {
+        char buffer[256];
+        if (fgets(buffer, sizeof(buffer), pipe_) != nullptr) {
+            response_.set_output(buffer);
+            response_.set_success(true);
+            StartWrite(&response_);
+        }
+        else {
+            pclose(pipe_);
+            pipe_ = nullptr;
+            StartRead(&request_);
+        }
+    }
+
+    FILE* pipe_ = nullptr;
+
+};
+class ProcessingImplemantation : public MetaOS::ShellControllerService::CallbackService
 {
 public:
-    grpc::Status ExecuteShell(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::MetaOS::ExecuteShellResponse, ::MetaOS::ExecuteShellRequest>* stream);
-private:
-    std::array<char, 128> buffer;
-    std::mutex mutex_;
+    grpc::ServerBidiReactor<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse>* ExecuteShell(grpc::CallbackServerContext* context) override {
+        return new ShellReactor();
+    }
 };
+
+

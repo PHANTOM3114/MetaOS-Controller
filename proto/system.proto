@@ -6,6 +6,11 @@ service ShellControllerService {
     rpc ExecuteShell (stream ExecuteShellRequest) returns (stream ExecuteShellResponse) {}
 }
 
+service EchoService {
+    rpc DoEcho(stream EchoRequest) returns (stream EchoResponse) {}
+}
+
+
 message ExecuteShellRequest {
     string command = 1;
 }
@@ -13,4 +18,12 @@ message ExecuteShellRequest {
 message ExecuteShellResponse {
     string output = 1;
     bool success = 2;
+}
+
+message EchoRequest {
+    string message = 1;
+}
+
+message EchoResponse {
+    string message = 1;
 }

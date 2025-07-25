@@ -41,19 +41,22 @@ public:
             exit(1);
         }
 
-        epoll_cycle = std::thread([&]() {
-            epoll_event event{};
-            event.events = EPOLLIN;
-            event.data.fd = master_fd_;
-            if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, master_fd_, &event) == -1) {
-                std::unique_lock<std::mutex> lock(queue_mutex_);
-                shell_output_queue_.push("");
+        epoll_event event{};
+        event.events = EPOLLIN;
+        event.data.fd = master_fd_;
 
-                data_notifier.notify_one();
-                return;
-            }
+        if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, master_fd_, &event) == -1) {
+            close(master_fd_);
+            close(epoll_fd_);
+            waitpid(pid_, nullptr, 0);
+            throw std::runtime_error("Failed to epoll_ctl: " + std::string(strerror(errno)));
+        }
+
+        epoll_cycle = std::thread([&]() {
+            std::cout << "Epoll_cycle\n";
             epoll_event events[10];
             while (running_ == true) {
+                std::cout << "while cycle in epoll_cycle\n";
                 int nfds = epoll_wait(epoll_fd_, events, 10, -1);
                 if (nfds == -1) {
                     std::cerr << "epoll_wait error\n";
@@ -79,11 +82,12 @@ public:
                         }
                         else {
                             std::string shell_data(buffer, count);
-                            {
-                                  std::unique_lock<std::mutex> lock(queue_mutex_);
-                                  shell_output_queue_.push(shell_data);
-                            }
-                            data_notifier.notify_one();
+                                {
+                                    std::unique_lock<std::mutex> lock(queue_mutex_);
+                                    shell_output_queue_.push(shell_data);
+                                }
+                                data_notifier.notify_one();
+                                DoNextWrite();
                         }
                     }
                 }
@@ -91,6 +95,7 @@ public:
         });
     }
     void Start() {
+        std::cout << "Start\n";
         StartRead(&request_);
     }
     void OnReadDone(bool ok) override;
@@ -122,7 +127,8 @@ private:
     std::queue<std::string> shell_output_queue_;
     std::mutex queue_mutex_;
     std::condition_variable data_notifier;
-    std::atomic<bool> running_;
+    std::atomic<bool> running_ = true;
+    std::atomic_flag writing_in_progress_ = ATOMIC_FLAG_INIT;
 
     MetaOS::ExecuteShellRequest request_;
     MetaOS::ExecuteShellResponse response_;

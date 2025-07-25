@@ -12,6 +12,7 @@ void ShellReactor::OnReadDone(bool ok) {
         std::string shell_prompt = request_.command();
         write(master_fd_, shell_prompt.c_str(), shell_prompt.length());
         StartRead(&request_);
+        std::cout << "After StartRead in OnReadDone\n";
     }
     else {
         Finish(grpc::Status::OK);
@@ -19,6 +20,8 @@ void ShellReactor::OnReadDone(bool ok) {
 }
 
 void ShellReactor::OnWriteDone(bool ok) {
+    writing_in_progress_.clear();
+
     if (ok) {
         std::cout << "OnWriteDone\n";
         DoNextWrite();
@@ -30,12 +33,18 @@ void ShellReactor::OnWriteDone(bool ok) {
 }
 
 void ShellReactor::DoNextWrite() {
+    if (writing_in_progress_.test_and_set()) {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock(queue_mutex_);
-    data_notifier.wait(lock, [&] { return !shell_output_queue_.empty(); });
+    if (shell_output_queue_.empty()) {
+        writing_in_progress_.clear();
+        return;
+    }
 
     std::string data = shell_output_queue_.front();
     shell_output_queue_.pop();
-
     lock.unlock();
 
     if (data.empty()) {

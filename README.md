@@ -14,7 +14,6 @@ The controller is designed to manage the following system components via its gRP
 * **🖥️ System & Process Management:**
     * [+] Basic remotely execute shell scripts and commands.
     * [ ] Manage system processes (start, stop, monitor).
-    * [ ] System shutdown and reboot.
 
 * **🌐 Network & VPN Control:**
     * [ ] Manage system-level VPN connections (e.g., OpenVPN, WireGuard).

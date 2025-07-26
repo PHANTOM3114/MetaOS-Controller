@@ -1,32 +1,18 @@
-# MetaOS Controller 
+# MetaOS Controller  
 
-!!!WARNING!!!
-
-This project is experemental which now developing for education only
+GRPC-based Main Network Daemon of MetaOS Ecosystem, which is dedicated to gather information from all other smaller daemons
 
 ![C++](https://img.shields.io/badge/C++-20-blue.svg)
 ![gRPC](https://img.shields.io/badge/gRPC-v1.x-brightgreen.svg)
 
 ## Features (Planned & In-Progress)
 
-The controller is designed to manage the following system components via its gRPC API:
+The controller is designed to manage the following system MetaOS components via its gRPC API:
 
-* **🖥️ System & Process Management:**
-    * [+] Basic remotely execute shell scripts and commands.
-    * [ ] Manage system processes (start, stop, monitor).
-
-* **🌐 Network & VPN Control:**
-    * [ ] Manage system-level VPN connections (e.g., OpenVPN, WireGuard).
-    * [ ] Switch between connection profiles.
-    * [ ] Monitor network status.
-
-* **⚙️ CI/CD & Developer Tooling:**
-    * [ ] Listen for CI/CD pipeline events (via WebSockets or other means).
-    * [ ] Trigger local actions based on build statuses.
-
-* **🎬 Real-time Streaming (Experimental / Future):**
-    * [ ] Screen/window streaming using WebRTC.
-    * [ ] Remote input handling (mouse, keyboard).
+* [x] **🖥️ System Management** 
+* [ ] **🔒 VPN Control**
+* [ ] **⚙️ CI/CD & Developer Tooling**
+* [ ] **🎬 Real-time Streaming (Experimental)**
 
 ## 🛠️ Current Technology Stack
 
@@ -40,8 +26,8 @@ The controller is designed to manage the following system components via its gRP
 
 ## 🗺️ Roadmap
 
-* [+] Make a stream-output of shell responce
-* [ ] Add a security layer above the shell responce and request
+* [x] Basic remotely execute shell scripts and commands.
 * [ ] Set up a fully working CI/CD pipeline with automated tests.
+* [ ] Add a security layer above the shell responce and request
 
 ---

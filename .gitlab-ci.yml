@@ -25,6 +25,7 @@ build_project:
     paths:
       - build/
 
+
 run_tests:
   stage: test
   image: ubuntu:latest

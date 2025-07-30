@@ -1,0 +1,33 @@
+
+variables:
+  DEPS: "build-essential cmake ninja-build g++ libgtest-dev libgrpc++-dev libprotobuf-dev protobuf-compiler protobuf-compiler-grpc"
+
+
+stages:
+  - build
+  - test
+
+build_project:
+  stage: build
+  image: ubuntu:latest
+
+  before_script:
+    - echo "Installing dependencies..."
+    - apt-get update && apt-get install -y $DEPS
+
+  script:
+    - echo "Configuring CMake..."
+    - cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DGRPCXX_USE_ASIO=ON
+    - echo "Building project..."
+    - cmake --build build --config Release
+
+  artifacts:
+    paths:
+      - build/
+
+run_tests:
+  stage: test
+  image: ubuntu:latest
+  script:
+    - echo "Running tests..."
+    - echo "Placeholder for future gtest tests"

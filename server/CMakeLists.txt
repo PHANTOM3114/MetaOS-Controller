@@ -13,7 +13,7 @@ target_link_libraries(server_logic PUBLIC
 )
 
 add_executable(server
-        src/server.cc
+        src/main.cc
 )
 
 target_link_libraries(server PRIVATE

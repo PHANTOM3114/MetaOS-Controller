@@ -6,6 +6,81 @@
 #include <sys/wait.h>
 #include <termios.h>
 
+ShellReactor::ShellReactor() {
+    std::cout << "ShellReactor\n";
+
+    epoll_fd_ = epoll_create1(0);
+    if (epoll_fd_ == -1) {
+        throw std::runtime_error("Failed to create epoll instance: " + std::string(strerror(errno)));
+    }
+
+    pid_ = forkpty(&master_fd_,nullptr, nullptr, nullptr);
+    if (pid_ == -1) {
+        close(epoll_fd_);
+        throw std::runtime_error("Failed to forkpty: " + std::string(strerror(errno)));
+    }
+
+    if (pid_ == 0) {
+        execlp("bash", "bash", nullptr);
+        perror("execlp failed");
+        exit(1);
+    }
+
+    epoll_event event{};
+    event.events = EPOLLIN;
+    event.data.fd = master_fd_;
+
+    if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, master_fd_, &event) == -1) {
+        close(master_fd_);
+        close(epoll_fd_);
+        waitpid(pid_, nullptr, 0);
+        throw std::runtime_error("Failed to epoll_ctl: " + std::string(strerror(errno)));
+    }
+
+    epoll_cycle = std::thread([&]() {
+        std::cout << "Epoll_cycle\n";
+        epoll_event events[10];
+        while (running_ == true) {
+            std::cout << "while cycle in epoll_cycle\n";
+            int nfds = epoll_wait(epoll_fd_, events, 10, -1);
+            if (nfds == -1) {
+                std::cerr << "epoll_wait error\n";
+                break;
+            }
+
+
+            for (int i = 0; i < nfds; ++i) {
+                if (events[i].data.fd == master_fd_) {
+                    char buffer[1024];
+                    ssize_t count = read(master_fd_, buffer, sizeof(buffer));
+                    if (count == -1) {
+                        if (errno != EAGAIN) {
+                            std::unique_lock<std::mutex> lock(queue_mutex_);
+                            shell_output_queue_.push("");
+                            data_notifier.notify_one();
+                        }
+                    }
+                    else if (count == 0) {
+                        std::unique_lock<std::mutex> lock(queue_mutex_);
+                        shell_output_queue_.push("");
+                        data_notifier.notify_one();
+                        break;
+                    }
+                    else {
+                        std::string shell_data(buffer, count);
+                        {
+                            std::unique_lock<std::mutex> lock(queue_mutex_);
+                            shell_output_queue_.push(shell_data);
+                        }
+                        data_notifier.notify_one();
+                        DoNextWrite();
+                    }
+                }
+            }
+        }
+    });
+}
+
 void ShellReactor::OnReadDone(bool ok) {
     if (ok) {
         std::cout << "OnReadDone\n";

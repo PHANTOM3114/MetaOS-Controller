@@ -1,5 +1,5 @@
 add_executable(client
-        src/client.cc
+        src/main.cc
         src/client_system.cc
 )
 

@@ -11,11 +11,16 @@
 #include <mutex>
 #include <iostream>
 
-class MetaClient {
+class ShellClient {
 public:
-    explicit MetaClient(std::shared_ptr<grpc::Channel> channel);
+    ShellClient(std::shared_ptr<grpc::Channel> channel)
+        : stub_(MetaOS::ShellControllerService::NewStub(channel)) {}
 
-    void ExecuteShellRequest();
+    void StartSession();
+
 private:
     std::unique_ptr<MetaOS::ShellControllerService::Stub> stub_;
+    std::unique_ptr<grpc::ClientReaderWriter<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse>> stream_;
+    std::thread reader_thread_;
+    std::thread writer_thread_;
 };

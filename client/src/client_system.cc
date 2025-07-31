@@ -3,43 +3,42 @@
 //
 #include "client_system.hh"
 
-MetaClient::MetaClient(std::shared_ptr<grpc::Channel> channel)
-    : stub_(MetaOS::ShellControllerService::NewStub(channel)) {}
+void ShellClient::StartSession() {
 
-void MetaClient::ExecuteShellRequest() {
     grpc::ClientContext context;
 
-    std::shared_ptr<grpc::ClientReaderWriter<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse>> stream(stub_->ExecuteShell(&context));
+    stream_ = stub_->ExecuteShell(&context);
 
-    std::thread writer([stream]() {
-        std::string line;
-        while (std::getline(std::cin, line)) {
-            if (line == "exit") {
+
+    reader_thread_ = std::thread([this]() {
+        MetaOS::ExecuteShellResponse response;
+        while (stream_->Read(&response)) {
+            fwrite(response.output().c_str(), 1, response.output().length(), stdout);
+            fflush(stdout);
+        }
+        std::cout << "\n[INFO] Server disconnected." << std::endl;
+    });
+
+    writer_thread_ = std::thread([this]() {
+        MetaOS::ExecuteShellRequest request;
+        for (std::string command; std::getline(std::cin, command);) {
+            if (command == "exit") {
                 break;
             }
-
-            MetaOS::ExecuteShellRequest request;
-            request.set_command(line);
-
-            if (!stream->Write(request)) {
+            request.set_command(command + "\n");
+            if (!stream_->Write(request)) {
+                std::cerr << "\n[ERROR] Failed to write to server." << std::endl;
                 break;
             }
         }
-
-        stream->WritesDone();
+        stream_->WritesDone();
     });
 
-    MetaOS::ExecuteShellResponse response;
-    while (stream->Read(&response)) {
-        std::cout << response.output();
-    }
+    writer_thread_.join();
+    reader_thread_.join();
 
-    writer.join();
-
-    grpc::Status status = stream->Finish();
+    grpc::Status status = stream_->Finish();
     if (!status.ok()) {
-        std::cerr << "RPC failed: " << status.error_message() << std::endl;
-    } else {
-        std::cout << "\n--- RPC finished successfully ---\n";
+        std::cerr << "\n[ERROR] RPC failed: " << status.error_code() << ": " << status.error_message() << std::endl;
     }
 }

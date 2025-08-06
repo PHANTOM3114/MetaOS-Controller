@@ -30,4 +30,7 @@ The controller is designed to manage the following system MetaOS components via 
 * [ ] Set up a fully working CI/CD pipeline with automated tests.
 * [ ] Add a security layer above the shell responce and request
 
+## Notes
+Many of directories are temporarily empty
+
 ---

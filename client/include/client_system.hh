@@ -1,7 +1,3 @@
-//
-// Created by Mykhailo Khymochko on 10.06.25.
-//
-
 #pragma once
 
 #include <grpcpp/grpcpp.h>

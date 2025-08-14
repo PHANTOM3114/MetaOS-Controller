@@ -6,9 +6,9 @@
 #include <sys/wait.h>
 #include <termios.h>
 
-ShellReactor::ShellReactor() {
-    std::cout << "ShellReactor\n";
-
+ShellReactor::ShellReactor(int master_fd, pid_t pid, OutputCallback output_callback)
+    : master_fd_(master_fd), pid_(pid), output_callback_(std::move(output_callback))
+{
     epoll_fd_ = epoll_create1(0);
     if (epoll_fd_ == -1) {
         throw std::runtime_error("Failed to create epoll instance: " + std::string(strerror(errno)));
@@ -38,16 +38,13 @@ ShellReactor::ShellReactor() {
     }
 
     epoll_cycle = std::thread([&]() {
-        std::cout << "Epoll_cycle\n";
         epoll_event events[10];
         while (running_ == true) {
-            std::cout << "while cycle in epoll_cycle\n";
             int nfds = epoll_wait(epoll_fd_, events, 10, -1);
             if (nfds == -1) {
                 std::cerr << "epoll_wait error\n";
                 break;
             }
-
 
             for (int i = 0; i < nfds; ++i) {
                 if (events[i].data.fd == master_fd_) {
@@ -74,6 +71,7 @@ ShellReactor::ShellReactor() {
                         }
                         data_notifier.notify_one();
                         DoNextWrite();
+                        break;
                     }
                 }
             }
@@ -83,11 +81,9 @@ ShellReactor::ShellReactor() {
 
 void ShellReactor::OnReadDone(bool ok) {
     if (ok) {
-        std::cout << "OnReadDone\n";
         std::string shell_prompt = request_.command();
         write(master_fd_, shell_prompt.c_str(), shell_prompt.length());
         StartRead(&request_);
-        std::cout << "After StartRead in OnReadDone\n";
     }
     else {
         Finish(grpc::Status::OK);
@@ -98,7 +94,6 @@ void ShellReactor::OnWriteDone(bool ok) {
     writing_in_progress_.clear();
 
     if (ok) {
-        std::cout << "OnWriteDone\n";
         DoNextWrite();
     }
     else {
@@ -123,10 +118,15 @@ void ShellReactor::DoNextWrite() {
     lock.unlock();
 
     if (data.empty()) {
-        Finish(grpc::Status::OK);
-    }
-    else {
-        response_.set_output(data);
-        StartWrite(&response_);
+        if (!output_callback_) {
+            Finish(grpc::Status::OK);
+        }
+    } else {
+        if (output_callback_) {
+            output_callback_(data);
+        } else {
+            response_.set_output(data);
+            StartWrite(&response_);
+        }
     }
 }

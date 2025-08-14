@@ -21,17 +21,19 @@
 
 class ShellReactor : public grpc::ServerBidiReactor<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse> {
 public:
-    ShellReactor();
+    using OutputCallback = std::function<void(const std::string&)>;
+
+    explicit ShellReactor(int master_fd, pid_t pid, OutputCallback output_callback = nullptr);
+
+    MetaOS::ExecuteShellRequest* GetRequest() { return &request_; }
 
     void Start() {
-        std::cout << "Start\n";
         StartRead(&request_);
     }
     void OnReadDone(bool ok) override;
     void OnWriteDone(bool ok) override;
 
     void OnDone() override {
-        std::cout << "OnDone\n";
         running_ = false;
         close(master_fd_);
 
@@ -59,6 +61,8 @@ private:
     std::atomic<bool> running_ = true;
     std::atomic_flag writing_in_progress_ = ATOMIC_FLAG_INIT;
 
+    OutputCallback output_callback_;
+
     MetaOS::ExecuteShellRequest request_;
     MetaOS::ExecuteShellResponse response_;
 };
@@ -79,12 +83,24 @@ class ProcessingImplemantation : public MetaOS::ShellControllerService::Callback
 public:
     grpc::ServerBidiReactor<MetaOS::ExecuteShellRequest, MetaOS::ExecuteShellResponse>* ExecuteShell(grpc::CallbackServerContext* context) override {
         try {
-            auto* reactor = new ShellReactor();
+            int master_fd;
+            pid_t pid = forkpty(&master_fd, nullptr, nullptr, nullptr);
+
+            if (pid < 0) {
+                return new AbortedReactor(grpc::Status(grpc::StatusCode::INTERNAL, "forkpty failed"));
+            }
+
+            if (pid == 0) {
+                execlp("bash", "bash", nullptr);
+                exit(1);
+            }
+
+            auto* reactor = new ShellReactor(master_fd, pid);
             reactor->Start();
             return reactor;
-        }
-        catch (const std::exception& e) {
-            std::cerr << "Failed to create ShellReactor: " << e.what() << std::endl;
+
+        } catch (const std::exception& e) {
+            std::cerr << "ShellReactor creation failed: " << e.what() << std::endl;
             return new AbortedReactor(grpc::Status(grpc::StatusCode::INTERNAL, e.what()));
         }
     }

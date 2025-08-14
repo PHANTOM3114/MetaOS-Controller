@@ -13,16 +13,10 @@ target_link_libraries(server_logic PUBLIC
 )
 
 add_executable(server
-        shell_controller/src/main.cc
+        main.cc
 )
 
 target_link_libraries(server PRIVATE
         server_logic
         gRPC::grpc++_reflection
 )
-
-option(BUILD_SERVER_TESTS "Build the tests for the server" ON)
-
-if(BUILD_SERVER_TESTS)
-    add_subdirectory(shell_controller/test)
-endif()

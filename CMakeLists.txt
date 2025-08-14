@@ -46,4 +46,3 @@ target_link_libraries(generated_protos PUBLIC
 enable_testing()
 
 add_subdirectory(server)
-add_subdirectory(client)

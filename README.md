@@ -5,32 +5,34 @@ GRPC-based Main Network Daemon of MetaOS Ecosystem, which is dedicated to gather
 ![C++](https://img.shields.io/badge/C++-20-blue.svg)
 ![gRPC](https://img.shields.io/badge/gRPC-v1.x-brightgreen.svg)
 
-## Features (Planned & In-Progress)
+## 🏛️ Architecture
 
-The controller is designed to manage the following system MetaOS components via its gRPC API:
+The system is built on the interaction of two key components:
 
-* [x] **🖥️ System Management** 
-* [ ] **🔒 VPN Control**
-* [ ] **⚙️ CI/CD & Developer Tooling**
-* [ ] **🎬 Real-time Streaming (Experimental)**
+* **Controllers:** Logical units within `MetaOS-Controller` responsible for a specific functional area which will communicate with modules.
+* **Modules:** Separate, independent applications that perform this functions. 
+
+## 🕹️ Core Controllers & Modules
+
+* [x] **🐚 Shell Controller:** Provides secure access to the system shell and command execution. *[Status: MVP Ready]*
+* [ ] **🚀 CI/CD Controller:** Enables monitoring and management of pipelines (initial target: GitHub Actions). *[Status: In Progress]*
+* [ ] **☁️ Cloud Controller:** Integration with cloud services and providers for remote access. *[Status: Planned]*
+* [ ] **🛡️ VPN Controller:** Manages VPN connections based on predefined scenarios (e.g., when connecting to a public network). *[Status: Planned]*
+* [ ] **🧠 AI Controller:** Integration with LLMs for user assistance and learning. *[Status: Planned]*
+
 
 ## 🛠️ Current Technology Stack
 
-* **Language:** C++20
+* **Language:** C++23
 * **RPC Framework:** gRPC
 * **Serialization:** Protocol Buffers (Protobuf)
 * **Build System:** CMake
 * **Testing:** GoogleTest
-
-*Further examples of client usage will be added here.*
+* **Key Libraries:** Boost.asio
 
 ## 🗺️ Roadmap
 
-* [x] Basic remotely execute shell scripts and commands.
-* [ ] Set up a fully working CI/CD pipeline with automated tests.
-* [ ] Add a security layer above the shell responce and request
-
-## Notes
-Many of directories are temporarily empty
+* [x] **Q3 2025:** Completed the `Shell Controller` MVP (basic command execution via `forkpty` and `epoll`).
+* [ ] **Q4 2025:** Develop the `CI/CD Controller` MVP and a dashboard module for GitHub Actions.
 
 ---

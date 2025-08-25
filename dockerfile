@@ -15,14 +15,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash metauser && echo "metauser:password" | chpasswd
-
 RUN adduser metauser sudo
-
 USER metauser
 WORKDIR /home/metauser
-
-COPY . /MetaOS
-
-WORKDIR /MetaOS
-
+COPY --chown=metauser:metauser . /home/metauser/MetaOS
+WORKDIR /home/metauser/MetaOS
 RUN mkdir -p build

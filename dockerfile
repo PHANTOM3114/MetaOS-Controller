@@ -1,21 +1,26 @@
-FROM ubuntu:latest
+FROM opensuse/tumbleweed:latest
+LABEL maintainer="Tux"
 
-RUN apt-get update && apt-get install -y \
+RUN zypper refresh && \
+    zypper install -y \
+    openssl \
+    libopenssl-devel \
     cmake \
-    g++ \
-    build-essential \
+    gcc-c++ \
+    make \
     git \
-    libgrpc++-dev \
-    libgrpc-dev \
-    protobuf-compiler-grpc \
-    libprotobuf-dev \
+    grpc-devel \
+    protobuf-devel \
+    libprotobuf-c-devel \
     pkg-config \
     sudo \
     nano \
-    && rm -rf /var/lib/apt/lists/*
+    shadow \
+    && zypper clean -a
 
 RUN useradd -m -s /bin/bash metauser && echo "metauser:password" | chpasswd
-RUN adduser metauser sudo
+RUN echo "metauser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 USER metauser
 WORKDIR /home/metauser
 COPY --chown=metauser:metauser . /home/metauser/MetaOS

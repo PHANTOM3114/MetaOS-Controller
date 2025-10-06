@@ -18,9 +18,11 @@ RUN zypper refresh && \
     shadow \
     && zypper clean -a
 
+# Adding User
 RUN useradd -m -s /bin/bash metauser && echo "metauser:password" | chpasswd
 RUN echo "metauser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# Switching to MetaUSER
 USER metauser
 WORKDIR /home/metauser
 COPY --chown=metauser:metauser . /home/metauser/MetaOS

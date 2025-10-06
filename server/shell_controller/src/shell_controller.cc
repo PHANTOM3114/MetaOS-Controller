@@ -7,7 +7,9 @@
 
 #include "shell_controller.hh"
 
-MetaOS::Controller::Shell::ShellReactor::ShellReactor(int master_fd, pid_t pid, OutputCallback output_callback)
+namespace MetaOS::Controller::Shell
+{
+    ShellReactor::ShellReactor(int master_fd, pid_t pid, OutputCallback output_callback)
     : master_fd_(master_fd), pid_(pid), output_callback_(std::move(output_callback))
 {
     epoll_fd_ = epoll_create1(0);
@@ -80,7 +82,7 @@ MetaOS::Controller::Shell::ShellReactor::ShellReactor(int master_fd, pid_t pid, 
     });
 }
 
-void MetaOS::Controller::Shell::ShellReactor::OnReadDone(bool ok) {
+void ShellReactor::OnReadDone(bool ok) {
     if (ok) {
         std::string shell_prompt = request_.command();
         write(master_fd_, shell_prompt.c_str(), shell_prompt.length());
@@ -91,7 +93,7 @@ void MetaOS::Controller::Shell::ShellReactor::OnReadDone(bool ok) {
     }
 }
 
-void MetaOS::Controller::Shell::ShellReactor::OnWriteDone(bool ok) {
+void ShellReactor::OnWriteDone(bool ok) {
     writing_in_progress_.clear();
 
     if (ok) {
@@ -103,7 +105,7 @@ void MetaOS::Controller::Shell::ShellReactor::OnWriteDone(bool ok) {
     }
 }
 
-void MetaOS::Controller::Shell::ShellReactor::DoNextWrite() {
+void ShellReactor::DoNextWrite() {
     if (writing_in_progress_.test_and_set()) {
         return;
     }
@@ -130,4 +132,5 @@ void MetaOS::Controller::Shell::ShellReactor::DoNextWrite() {
             StartWrite(&response_);
         }
     }
+}
 }

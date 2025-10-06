@@ -1,4 +1,4 @@
-# MetaOS Controller  
+# MetaOS Controller
 
 GRPC-based Main Network Daemon of MetaOS Ecosystem, which is dedicated to gather information from all other smaller daemons
 

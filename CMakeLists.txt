@@ -4,6 +4,19 @@ project(remote_controller CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package(OpenSSL REQUIRED)
+if(NOT TARGET OpenSSL::SSL)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(OPENSSL REQUIRED openssl)
+
+    add_library(OpenSSL::SSL INTERFACE IMPORTED)
+    target_link_libraries(OpenSSL::SSL INTERFACE ${OPENSSL_LIBRARIES})
+    target_include_directories(OpenSSL::SSL INTERFACE ${OPENSSL_INCLUDE_DIRS})
+
+    add_library(OpenSSL::Crypto INTERFACE IMPORTED)
+    target_link_libraries(OpenSSL::Crypto INTERFACE ${OPENSSL_LIBRARIES})
+    target_include_directories(OpenSSL::Crypto INTERFACE ${OPENSSL_INCLUDE_DIRS})
+endif()
 find_package(gRPC REQUIRED)
 
 set(PROTO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/proto/system.proto)
@@ -41,6 +54,8 @@ target_include_directories(generated_protos PUBLIC
 target_link_libraries(generated_protos PUBLIC
         protobuf::libprotobuf
         gRPC::grpc++
+        OpenSSL::SSL
+        OpenSSL::Crypto
 )
 
 enable_testing()

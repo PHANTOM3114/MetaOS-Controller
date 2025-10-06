@@ -1,10 +1,11 @@
-#include "system.hh"
-
+//Standart Includes
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <sys/wait.h>
 #include <termios.h>
+
+#include "shell_controller.hh"
 
 ShellReactor::ShellReactor(int master_fd, pid_t pid, OutputCallback output_callback)
     : master_fd_(master_fd), pid_(pid), output_callback_(std::move(output_callback))

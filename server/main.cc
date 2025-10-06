@@ -8,7 +8,7 @@
 #include <grpcpp/grpcpp.h>
 #include <system.grpc.pb.h>
 
-#include <system.hh>
+#include <shell_controller.hh>
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
 
-    ProcessingImplemantation service;
+    MetaOS::Controller::Shell::ProcessingImplemantation service;
     ServerBuilder builder;
 
     // Set the server address and port

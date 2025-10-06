@@ -10,7 +10,7 @@ GRPC-based Main Network Daemon of MetaOS Ecosystem, which is dedicated to gather
 The system is built on the interaction of two key components:
 
 * **Controllers:** Logical units within `MetaOS-Controller` responsible for a specific functional area which will communicate with modules.
-* **Modules:** Separate, independent applications that perform this functions.
+* **Modules:** Separate, independent applications that perform this functions. 
 
 ## 🕹️ Core Controllers & Modules
 

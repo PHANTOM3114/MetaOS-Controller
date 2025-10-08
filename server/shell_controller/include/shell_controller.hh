@@ -1,23 +1,22 @@
 #pragma once
 
-#include <grpcpp/grpcpp.h>
-#include "system.grpc.pb.h"
-#include "system.pb.h"
-
+//Standard includes
 #include <mutex>
 #include <thread>
 #include <string>
-#include <array>
 #include <vector>
 #include <queue>
 #include <condition_variable>
 #include <pty.h>
 #include <termios.h>
-
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/epoll.h>
 #include <sys/wait.h>
+
+//gRPC includes
+#include <grpcpp/grpcpp.h>
+#include "system.grpc.pb.h"
+#include "system.pb.h"
 
 namespace MetaOS
 {

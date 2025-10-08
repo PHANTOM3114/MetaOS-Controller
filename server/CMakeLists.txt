@@ -1,9 +1,11 @@
 add_library(server_logic
         shell_controller/src/shell_controller.cc
+        cicd_controller/src/cicd_controller.cc
 )
 
 target_include_directories(server_logic PUBLIC
         shell_controller/include
+        cicd_controller/include
 )
 
 target_link_libraries(server_logic PUBLIC

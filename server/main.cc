@@ -8,7 +8,7 @@
 #include <grpcpp/grpcpp.h>
 #include <system.grpc.pb.h>
 
-#include <shell_controller.hh>
+#include "shell_controller.hh"
 
 using grpc::Server;
 using grpc::ServerBuilder;

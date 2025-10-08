@@ -2,7 +2,7 @@
 
 GRPC-based Main Network Daemon of MetaOS Ecosystem, which is dedicated to gather information from all other smaller daemons
 
-![C++](https://img.shields.io/badge/C++-20-blue.svg)
+![C++](https://img.shields.io/badge/C++-23-blue.svg)
 ![gRPC](https://img.shields.io/badge/gRPC-v1.x-brightgreen.svg)
 
 ## 🏛️ Architecture
